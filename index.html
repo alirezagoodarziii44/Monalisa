@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>Trade Check Pro</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080e1b;color:#edf3ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif}
+.app{max-width:900px;margin:auto;padding:14px 12px 40px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}h1{font-size:21px;margin:0}.muted{color:#92a0b8;font-size:11px;line-height:1.7}
+.tabs{display:flex;gap:6px;background:#121a2b;padding:5px;border-radius:14px;margin-bottom:12px;position:sticky;top:6px;z-index:20}.tab{flex:1;border:0;border-radius:10px;background:transparent;color:#aab6ce;padding:11px 7px;font-weight:800}.tab.active{background:#293653;color:#fff}
+.card,.q,.entry{background:#111a2d;border:1px solid #273450;border-radius:16px;padding:13px;margin:10px 0}.q{border-right:5px solid #42516f;transition:.2s}.q.g{border-right-color:#19c77a;background:linear-gradient(90deg,#19c77a10,#111a2d)}.q.y{border-right-color:#e4ae32;background:linear-gradient(90deg,#e4ae3210,#111a2d)}.q.r{border-right-color:#ef5361;background:linear-gradient(90deg,#ef536110,#111a2d)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:9px}.title{font-size:13px;font-weight:850;line-height:1.7}.badge{padding:7px 9px;border-radius:9px;background:#26324a;color:#b8c5dc;font-size:10px;font-weight:850;white-space:nowrap}.bg{background:#123b2a;color:#68e4a0}.by{background:#4b3d10;color:#f5d36b}.br{background:#4b1b24;color:#ff8d99}
+.opts{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.opt,.btn{border:1px solid #3b4865;background:#1d2840;color:#dce5f5;border-radius:10px;padding:8px 10px;font-weight:800}.opt.on{color:#fff}.good.on{background:#1f9d62;border-color:#1f9d62}.midup.on{background:#8aa83f;border-color:#8aa83f}.mid.on{background:#c69a20;border-color:#c69a20}.bad.on{background:#c23b4b;border-color:#c23b4b}
+.critical{font-size:9px;background:#3e2028;color:#ff9aa5;border-radius:999px;padding:4px 7px;margin-right:5px}.primary{background:#4f7cff;color:#fff;border:0;width:100%;padding:13px}.secondary{background:#26324b;color:#fff}.danger{background:#7d2936;color:#fff;border:0}
+.final{border:2px solid #273450}.final.ready{border-color:#19c77a;background:#0e2c22}.final.block{border-color:#ef5361;background:#32151c}.final.wait{border-color:#e4ae32;background:#342a0d}.big{font-size:22px;font-weight:900}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.field label{display:block;font-size:11px;color:#aebbd0;margin-bottom:5px;font-weight:700}.field input,.field select,.field textarea{width:100%;background:#0c1424;border:1px solid #303d5b;color:#fff;border-radius:10px;padding:10px;font:inherit}.field textarea{min-height:110px;resize:vertical}.full{grid-column:1/-1}
+.entry{padding:12px}.entry h3{font-size:14px;margin:0 0 5px}.thumb{width:100%;max-height:340px;object-fit:contain;background:#070b13;border-radius:10px;margin-top:8px}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.actions .btn{flex:1;min-width:110px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.kpi{background:#0d1525;border:1px solid #26324c;border-radius:12px;padding:10px}.kpi b{font-size:17px;display:block}.kpi span{font-size:10px;color:#91a0ba}.pos{color:#55dda0}.neg{color:#ff7d8b}.neutral{color:#f0c95b}
+.notice{font-size:11px;color:#93a0b7;line-height:1.8}.hidden{display:none!important}
+@media(min-width:700px){.grid3{grid-template-columns:repeat(3,1fr)}.kpis{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><div><h1>TRADE CHECK PRO</h1><div class="muted">تأییدیه • ژورنال • عملکرد روزانه و ماهانه</div></div><div id="count" class="badge">0 / 7</div></div>
+<div class="tabs">
+<button id="tCheck" class="tab active" onclick="show('check')">✓ تأییدیه‌ها</button>
+<button id="tJournal" class="tab" onclick="show('journal')">📁 ژورنال</button>
+<button id="tStats" class="tab" onclick="show('stats')">📊 عملکرد</button>
+</div>
+
+<section id="check">
+<div id="questions"></div>
+<div id="finalCard" class="card final wait">
+<div class="row"><div><div class="muted">نتیجه تصمیم</div><div id="decision" class="big">در انتظار بررسی</div></div><div id="score" class="badge">0%</div></div>
+<div id="decisionText" class="notice" style="margin-top:7px">تمام تأییدیه‌ها را بررسی کن.</div>
+<button class="btn primary" style="margin-top:12px" onclick="saveCurrent()">💾 ذخیره معامله در ژورنال</button>
+</div>
+</section>
+
+<section id="journal" class="hidden">
+<div class="card"><b>📁 پرونده‌های ژورنال</b><div class="notice">هر بار ذخیره، یک پرونده مستقل می‌سازد. داخل هر پرونده می‌توانی اسکرین‌شات، اطلاعات معامله و یادداشتت را ثبت کنی.</div></div>
+<div id="journalList"></div>
+</section>
+
+<section id="stats" class="hidden">
+<div class="card"><div class="row"><div><b>📊 عملکرد</b><div class="notice">آمار از معاملات ذخیره‌شده محاسبه می‌شود.</div></div>
+<select id="month" onchange="renderStats()" style="background:#0c1424;color:#fff;border:1px solid #303d5b;border-radius:9px;padding:8px"></select></div></div>
+<div id="statsBox"></div>
+</section>
+</div>
+
+<script>
+const Q=[
+{id:1,t:"Tashkhis ravand (soodi ya noozoli)",o:["صعودی","نزولی"],type:"trend"},
+{id:2,t:"ghodrat dar leg edame dehnde:",o:["عالی","متوسط رو به بالا","متوسط رو به پایین","ضعیف"],type:"strength"},
+{id:3,t:"Karekshen",o:["تأیید شد","تأیید نشد"]},
+{id:4,t:"Zaaf dar karekshen bray moamele grane khalaf jehat ravand :",o:["واضح","متوسط رو به بالا","متوسط رو به پایین","ضعیف"],critical:true},
+{id:5,t:"Ghodrat dar karekshen bray moamele garane ham jehat ravand :",o:["قوی","متوسط رو به بالا","متوسط رو به پایین","ضعیف"],critical:true},
+{id:6,t:"Andaze SL :",o:["مناسب","قابل قبول","نامناسب"]},
+{id:7,t:"Revard 2 medehad :",o:["بله","خیر"]}
+];
+let S=JSON.parse(localStorage.getItem("tcp_state")||"{}");
+let J=JSON.parse(localStorage.getItem("tcp_journal")||"[]");
+
+function saveAll(){localStorage.setItem("tcp_state",JSON.stringify(S));localStorage.setItem("tcp_journal",JSON.stringify(J))}
+function tone(v,q){
+ if(!v)return "";
+ if(q.id===1)return "g";
+ if(["عالی","قوی","مناسب","واضح","تأیید شد","بله"].includes(v))return "g";
+ if(["متوسط","قابل قبول"].includes(v))return "y";
+ return "r";
+}
+function optClass(v){
+ if(["عالی","واضح","قوی"].includes(v)) return "good";
+ if(v==="متوسط رو به بالا") return "midup";
+ if(["متوسط رو به پایین","متوسط"].includes(v)) return "mid";
+ if(v==="ضعیف") return "bad";
+ return ["مناسب","تأیید شد","بله","صعودی","نزولی"].includes(v)?"good":"bad";
+}
+function renderQ(){
+ let h="";
+ Q.forEach(q=>{
+  const v=S[q.id], c=tone(v,q);
+  h+=`<div class="q ${c}"><div class="row"><div class="title">${q.id}. ${q.t} ${q.critical?'<span class="critical">حیاتی</span>':""}</div><span class="badge">${v||"انتخاب نشده"}</span></div><div class="opts">`;
+  q.o.forEach(o=>h+=`<button class="opt ${optClass(o)} ${v===o?"on":""}" onclick="pick(${q.id},'${o}')">${o}</button>`);
+  h+="</div></div>";
+ });
+ document.getElementById("questions").innerHTML=h; renderDecision();
+}
+function pick(id,v){S[id]=v;saveAll();renderQ()}
+function quality(v,q){
+ if(!v)return 0;
+ if(q.id===1)return 1;
+ if([2,4,5].includes(q.id)){
+  if(["عالی","واضح","قوی"].includes(v)) return 1;
+  if(v==="متوسط رو به بالا") return .75;
+  if(v==="متوسط رو به پایین") return .5;
+  if(v==="ضعیف") return 0;
+}
+if(q.id===2)return 0;
+if(q.id===4)return 0;
+if(q.id===5)return 0;
+ if(q.id===6)return v==="مناسب"?1:v==="قابل قبول"?.5:0;
+ if(q.id===7)return v==="بله"?1:0;
+ return v==="تأیید شد"?1:0;
+}
+function renderDecision(){
+ const n=Q.filter(q=>S[q.id]).length;
+ const criticalOK=S[4]==="واضح" && S[5]==="قوی";
+ const total=Q.reduce((a,q)=>a+quality(S[q.id],q),0);
+ const pct=Math.round(total/7*100);
+ let cls="wait",title="در انتظار بررسی",txt="تمام تأییدیه‌ها را بررسی کن.";
+ if(S[4]&&S[4]!=="واضح"){cls="block";title="🔴 NO TRADE";txt="تأییدیه حیاتی شماره ۴ کافی نیست."}
+ else if(S[5]&&S[5]!=="قوی"){cls="block";title="🔴 NO TRADE";txt="تأییدیه حیاتی شماره ۵ کافی نیست."}
+ else if(n===7 && criticalOK && pct>=80){cls="ready";title="🟢 TRADE READY";txt="تأییدیه‌های حیاتی و امتیاز کلی مناسب هستند."}
+ else if(n){cls="wait";title="🟡 WAIT";txt=criticalOK?"تأییدیه‌های حیاتی تأیید شده‌اند؛ بررسی بقیه موارد کامل نیست.":"برای ورود، تأییدیه‌های حیاتی ۴ و ۵ را کامل کن."}
+ const card=document.getElementById("finalCard");card.className="card final "+cls;
+ document.getElementById("decision").textContent=title;document.getElementById("decisionText").textContent=txt;document.getElementById("score").textContent=pct+"%";document.getElementById("count").textContent=n+" / 7";
+}
+function saveCurrent(){
+ if(!Object.keys(S).length){alert("ابتدا تأییدیه‌ها را انتخاب کن.");return}
+ const item={id:Date.now(),created:new Date().toISOString(),answers:{...S},image:"",note:"",side:"",entry:"",sl:"",tp:"",result:"",profit:"",loss:"",balanceBefore:"",balanceAfter:"",r:""};
+ J.unshift(item);saveAll();show("journal");renderJournal();
+}
+function show(x){
+ ["check","journal","stats"].forEach(a=>document.getElementById(a).classList.toggle("hidden",a!==x));
+ document.getElementById("tCheck").classList.toggle("active",x==="check");document.getElementById("tJournal").classList.toggle("active",x==="journal");document.getElementById("tStats").classList.toggle("active",x==="stats");
+ if(x==="journal")renderJournal();if(x==="stats")initMonths();
+}
+function val(id,key,v){const x=J.find(a=>a.id===id);if(x){x[key]=v;saveAll()}}
+function attach(id,input){const f=input.files[0];if(!f)return;if(f.size>8e6){alert("اسکرین‌شات باید کمتر از 8MB باشد.");return}const r=new FileReader();r.onload=()=>{val(id,"image",r.result);renderJournal()};r.readAsDataURL(f)}
+function renderJournal(){
+ const el=document.getElementById("journalList");
+ if(!J.length){el.innerHTML='<div class="card notice">هنوز معامله‌ای ذخیره نشده.</div>';return}
+ el.innerHTML=J.map(x=>{
+  const ans=Q.map(q=>q.id+": "+(x.answers[q.id]||"—")).join(" • ");
+  return `<div class="entry">
+  <div class="row"><h3>📄 معامله #${x.id}</h3><span class="muted">${new Date(x.created).toLocaleString("fa-IR")}</span></div>
+  <div class="muted">${ans}</div><hr>
+  <div class="grid">
+   <div class="field"><label>پوزیشن</label><select onchange="val(${x.id},'side',this.value)"><option value="">انتخاب</option><option ${x.side==="Buy"?"selected":""}>Buy</option><option ${x.side==="Sell"?"selected":""}>Sell</option></select></div>
+   <div class="field"><label>نتیجه معامله</label><select onchange="val(${x.id},'result',this.value);renderStats()"><option value="">انتخاب</option><option ${x.result==="Win"?"selected":""}>Win</option><option ${x.result==="Loss"?"selected":""}>Loss</option><option ${x.result==="BE"?"selected":""}>BE</option></select></div>
+   <div class="field"><label>قیمت ورود</label><input value="${x.entry}" oninput="val(${x.id},'entry',this.value)"></div>
+   <div class="field"><label>حد ضرر</label><input value="${x.sl}" oninput="val(${x.id},'sl',this.value)"></div>
+   <div class="field"><label>حد سود</label><input value="${x.tp}" oninput="val(${x.id},'tp',this.value)"></div>
+   <div class="field"><label>نتیجه برحسب R</label><input placeholder="+2R / -1R" value="${x.r}" oninput="val(${x.id},'r',this.value);renderStats()"></div>
+   <div class="field"><label>سود</label><input type="number" value="${x.profit}" oninput="val(${x.id},'profit',this.value);renderStats()"></div>
+   <div class="field"><label>ضرر</label><input type="number" value="${x.loss}" oninput="val(${x.id},'loss',this.value);renderStats()"></div>
+   <div class="field"><label>موجودی قبل</label><input type="number" value="${x.balanceBefore}" oninput="val(${x.id},'balanceBefore',this.value);renderStats()"></div>
+   <div class="field"><label>موجودی بعد</label><input type="number" value="${x.balanceAfter}" oninput="val(${x.id},'balanceAfter',this.value);renderStats()"></div>
+   <div class="field full"><label>🖼️ اسکرین‌شات چارت</label><input type="file" accept="image/*" onchange="attach(${x.id},this)">${x.image?`<img class="thumb" src="${x.image}">`:""}</div>
+   <div class="field full"><label>📝 ژورنال / توضیحات معامله</label><textarea oninput="val(${x.id},'note',this.value)">${x.note||""}</textarea></div>
+  </div>
+  <div class="actions"><button class="btn secondary" onclick="alert('ذخیره شد ✅')">💾 ذخیره</button><button class="btn danger" onclick="del(${x.id})">حذف پرونده</button></div>
+  </div>`}).join("");
+}
+function del(id){if(confirm("این پرونده حذف شود؟")){J=J.filter(x=>x.id!==id);saveAll();renderJournal();renderStats()}}
+function initMonths(){
+ const s=document.getElementById("month"), old=s.value;let months=[...new Set(J.map(x=>x.created.slice(0,7)))];if(!months.length)months=[new Date().toISOString().slice(0,7)];
+ s.innerHTML=months.map(m=>`<option value="${m}">${m}</option>`).join("");if(months.includes(old))s.value=old;renderStats()
+}
+function renderStats(){
+ const m=document.getElementById("month").value||new Date().toISOString().slice(0,7), a=J.filter(x=>x.created.slice(0,7)===m);
+ const wins=a.filter(x=>x.result==="Win").length,loss=a.filter(x=>x.result==="Loss").length,be=a.filter(x=>x.result==="BE").length;
+ const profit=a.reduce((s,x)=>s+(parseFloat(x.profit)||0),0), lossMoney=a.reduce((s,x)=>s+(parseFloat(x.loss)||0),0), net=profit-lossMoney;
+ const r=a.reduce((s,x)=>s+(parseFloat(String(x.r).replace(/[^\d.-]/g,""))||0),0), wr=a.length?wins/a.length*100:0;
+ const start=a.find(x=>x.balanceBefore)?.balanceBefore||"", end=[...a].reverse().find(x=>x.balanceAfter)?.balanceAfter||"";
+ document.getElementById("statsBox").innerHTML=`<div class="card"><div class="kpis">
+ <div class="kpi"><b>${a.length}</b><span>کل معاملات</span></div><div class="kpi"><b class="pos">${wins}</b><span>برد</span></div><div class="kpi"><b class="neg">${loss}</b><span>باخت</span></div><div class="kpi"><b class="neutral">${be}</b><span>Break Even</span></div>
+ <div class="kpi"><b>${wr.toFixed(1)}%</b><span>Win Rate</span></div><div class="kpi"><b class="pos">${profit.toFixed(2)}</b><span>مجموع سود</span></div><div class="kpi"><b class="neg">-${lossMoney.toFixed(2)}</b><span>مجموع ضرر</span></div><div class="kpi"><b class="${net>=0?"pos":"neg"}">${net>=0?"+":""}${net.toFixed(2)}</b><span>برآیند خالص</span></div>
+ <div class="kpi"><b class="${r>=0?"pos":"neg"}">${r>=0?"+":""}${r.toFixed(2)}R</b><span>برآیند R</span></div><div class="kpi"><b>${start||"—"}</b><span>موجودی شروع</span></div><div class="kpi"><b>${end||"—"}</b><span>موجودی پایان</span></div><div class="kpi"><b>${new Set(a.map(x=>x.created.slice(0,10))).size}</b><span>روزهای معاملاتی</span></div>
+ </div><hr><div class="row"><b>نتیجه ماه</b><b class="${net>=0?"pos":"neg"}">${a.length?(net>=0?"🟢 مثبت":"🔴 منفی"):"—"}</b></div><div class="notice">این آمار فقط بر اساس اطلاعاتی است که خودت در ژورنال وارد کرده‌ای.</div></div>`;
+}
+renderQ();
+</script>
+</body></html>
